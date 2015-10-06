@@ -97,12 +97,12 @@ class Noodlet(QtGui.QGraphicsWidget):
     def hoverEnterEvent(self, event):
         self.bg_color = QtGui.QColor(200,60,60)
         self.update()
-        print("h-e ", end='', flush=True)
+        #print("h-e ", end='', flush=True)
     
     def hoverLeaveEvent(self, event):
         self.bg_color = QtGui.QColor(60,60,200)
         self.update()
-        print("h-l ", end='', flush=True)
+        #print("h-l ", end='', flush=True)
 
     
 class NodeBox(MyFrame):
@@ -134,8 +134,8 @@ class NodeBox(MyFrame):
                       + [Noodlet(*self.input_item_pos(i)) for i in self.items]
                       
         for n in self.noodlets:
-            n.setZValue(10)
             scene.addItem(n)
+            n.setZValue(10)
         #    self.group.addToGroup(n)
 
         #scene.addItem(self.group)
@@ -159,7 +159,9 @@ class NodeBox(MyFrame):
     def mousePressEvent(self, event):
         self.group = QtGui.QGraphicsItemGroup(self.proxy, self.scene)
         for n in self.noodlets:
+            n.setZValue(20)
             self.group.addToGroup(n)
+        self.proxy.setZValue(19)
             
         self.dragging = True
         self.drag_pos = (event.x(), event.y())
@@ -168,15 +170,18 @@ class NodeBox(MyFrame):
     def mouseMoveEvent(self, event):
         if self.dragging:
             x = self.x(); y = self.y()
-            self.scene.update(x-10, y-10, self.width() + 20, self.height()+20)
-            for n in self.noodlets:
-                n.update()
+            #self.scene.update(x-10, y-10, self.width() + 20, self.height()+20)
+            #for n in self.noodlets:
+                #n.update()
             x += (event.x() - self.drag_pos[0])
             y += (event.y() - self.drag_pos[1])
             self.move(x, y)
             
     def mouseReleaseEvent(self, event):
         self.scene.destroyItemGroup(self.group)
+        for n in self.noodlets:
+            n.setZValue(10)
+        self.proxy.setZValue(0)
         self.dragging = False
         #rint("drop")
         
