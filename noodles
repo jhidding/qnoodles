@@ -1,0 +1,6 @@
+#!/usr/bin/python3
+
+from qnoodles.qnoodles import main
+
+main()
+

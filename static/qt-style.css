@@ -1,0 +1,17 @@
+QFrame[frameClass="blue"] {
+    background-color: rgba(200, 200, 255, 255);
+    border: 3px solid black;
+    border-radius: 16px;
+}
+
+MyFrame QLabel {
+    font-weight: bold;
+}
+
+QFrame QPushButton {
+}
+
+QGraphicsView {
+    background-color: #020;
+}
+

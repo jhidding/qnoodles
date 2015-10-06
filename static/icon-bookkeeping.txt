@@ -1,0 +1,8 @@
+convert icons from svg to png:
+> rsvg -w 16 -h 16 <icon.svg> <icon.png>
+
+generate cache file:
+> gtk-update-icon-cache -f -t ./icons/hicolor
+
+todo: make a little script to automate this
+

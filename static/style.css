@@ -1,0 +1,42 @@
+GtkLayout {
+    background-color: #002520;
+}
+
+.Node {
+    border-radius: 16px;
+    background-color: white;
+}
+
+.NodeBox GtkSeparator {
+    color: black;
+}
+
+.NodeBox {
+    border-radius: 8px;
+    border-style: solid;
+    background-color: #eee;
+/*    border-color: black;
+    border-width: 1px; */
+    box-shadow: 2px 2px 2px alpha(black, 0.5);
+}
+
+.NodeBox .Item {
+    color: black;
+}
+
+.NodeBox GtkButton {
+    background-color: red;
+}
+
+.NodeBox GtkStatusbar {
+    font-size: 7pt;
+    color: #888;
+}
+
+GtkImage {
+}
+
+.Editor {
+    font: Inconsolata normal 14;
+}
+
