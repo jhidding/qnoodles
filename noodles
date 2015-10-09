@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from qnoodles.qnoodles import main
+from testing.adder import test_model
 
-main()
+main(test_model)
 

@@ -24,21 +24,28 @@ class NodeView(QtGui.QGraphicsView):
         self.show()
 
 class NodeScene(QtGui.QGraphicsScene):
-    def __init__(self):
-        super(NodeScene, self).__init__()
-        self.node1 = NodeBox("jippee", self, 0, 0)
-        self.node2 = NodeBox("wheee", self, 300, 0)
-        self.node3 = NodeBox("gogogo", self, 600, 150)        
+    def __init__(self, data_model):
+        super(NodeScene, self).__init__()            
+        self.nodes = [NodeBox(n, self) for i, n in data_model.all_nodes()]
+                
+    def noodletPressed(self, i, s):
+        pass
+        #print("{0}-{1} pressed".format(i, s))
+        
+    def noodletReleased(self, i, s):
+        pass
+        #print("{0}-{1} released".format(i, s))
 
 class NoodlesWindow(QtGui.QMainWindow):    
-    def __init__(self):
+    def __init__(self, data_model):
         super(NoodlesWindow, self).__init__()
         
+        self.data_model = data_model
         self.initUI()
         
     def initUI(self):
         style = str(open("static/qt-style.css", "r").read())
-        self.nodeScene = NodeScene()
+        self.nodeScene = NodeScene(self.data_model)
         self.nodeView = NodeView(self.nodeScene)
 
         self.nodeView.setStyleSheet(style)
@@ -52,7 +59,7 @@ class NoodlesWindow(QtGui.QMainWindow):
         
         self.setGeometry(300, 300, 1024, 600)
         self.setWindowTitle('Noodles')    
-        self.setWindowIcon(QtGui.QIcon('../static/noodles-icon.png'))
+        self.setWindowIcon(QtGui.QIcon('static/noodles-icon.png'))
         
         self.statusBar().showMessage('Ready')
 
@@ -94,14 +101,14 @@ class NoodlesWindow(QtGui.QMainWindow):
         self.sourceView.backend.stop()
                 
 
-def main():
+def main(model):
     app = QtGui.QApplication(sys.argv)
     
 #    Qode.backend.CodeCompletionWorker.providers.append(
 #        backend.DocumentWordsProvider())
 #    Qode.backend.serve_forever()
     
-    win = NoodlesWindow()
+    win = NoodlesWindow(model)
     sys.exit(app.exec_())
 
 

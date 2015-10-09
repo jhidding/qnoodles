@@ -4,7 +4,7 @@ QFrame[frameClass="blue"] {
     border-radius: 16px;
 }
 
-MyFrame QLabel {
+MyFrame QLabel[labelClass="title"] {
     font-weight: bold;
 }
 
@@ -12,6 +12,6 @@ QFrame QPushButton {
 }
 
 QGraphicsView {
-    background-color: #020;
+    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 "#693", stop:1 "#cf8");
 }
 

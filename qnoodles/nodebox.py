@@ -4,6 +4,26 @@ from PySide.QtCore import Qt
 
 from .noodlet import Noodlet
 
+class MySeparator(QtGui.QWidget):
+    """
+    Qt doesn't have a `QSeparator` widget. This draws a horizontal line.
+    """
+    
+    def __init__(self, parent=None):
+        super(MySeparator, self).__init__(parent)
+        self.setAutoFillBackground(False)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+        self.setFixedHeight(8)
+        
+    def paintEvent(self, event):
+        pt = QtGui.QPainter(self)
+        pt.setRenderHints(pt.Antialiasing)
+        w, h = self.size().toTuple()
+        
+        pen = QtGui.QPen(QtGui.QBrush(Qt.black), 1)
+        pt.drawLine(4, h/2, w-4, h/2)
+        
 class MyFrame(QtGui.QWidget):
     """
     The standard `QFrame` doesn't have the fine-grained control over
@@ -36,11 +56,30 @@ class MyFrame(QtGui.QWidget):
         
         path = QtGui.QPainterPath()
         brush = QtGui.QBrush(Qt.gray)
-        pen = QtGui.QPen(QtGui.QBrush(Qt.black), 1.0)
+        pen = QtGui.QPen(QtGui.QBrush(Qt.black), 0.5)
         path.addRoundedRect(1, 1, w-2, h-2, 8, 8)
         pt.fillPath(path, brush)
-        #pt.strokePath(path, pen)
+        pt.strokePath(path, pen)
 
+def _make_widget(noodlet):
+    """
+    Arguments:
+        noodlet - named tuple which should have `name`, `dtype`, `widget`
+            attributes.
+            
+    Returns:
+        a QWidget
+    """
+    
+    w = QtGui.QLabel("{name} [{dtype}]".format(name=noodlet.name, dtype=noodlet.dtype.__name__))
+    if noodlet.direction == 'out':
+        w.setAlignment(QtCore.Qt.AlignRight)
+    
+    w.setProperty('labelClass', 'noodlet')
+    w.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+    w.setContentsMargins(5, 2, 5, 2)
+    return w
+    
 class NodeBox(MyFrame):
     """
     The NodeBox is the widget that displays a Node and its childs. It also
@@ -52,35 +91,47 @@ class NodeBox(MyFrame):
     released the group is descroyed so that the noodlets recieve their own
     events once more.
     """
-    def __init__(self, name, scene, x = 0, y = 0):
+    def __init__(self, node, scene):
         super(NodeBox, self).__init__()
         self.scene = scene
+        self.data  = node
         
         style = str(open("static/qt-style.css", "r").read())
         #self.setFrameStyle(self.StyledPanel | self.Plain)
         self.box = QtGui.QVBoxLayout()
         self.setLayout(self.box)
         
-        self.title = QtGui.QLabel(name, self)
+        self.title = QtGui.QLabel(node.name, self)
         self.title.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+        self.title.setProperty('labelClass', 'title')
         self.box.addWidget(self.title)
-        
-        self.items = [QtGui.QPushButton("Blah {0}".format(i), self) for i in range(3)]
-        for i in self.items:
+                    
+        #self.items = [QtGui.QPushButton("Blah {0}".format(i), self) for i in range(3)]
+        self.input_items = [_make_widget(i) for i in self.data.input_noodlets()]
+        for i in self.input_items:
             self.box.addWidget(i)
+           
+        self._sep = MySeparator() 
+        self.box.addWidget(self._sep)
+        self.output_items = [_make_widget(i) for i in self.data.output_noodlets()]
 
+        for i in self.output_items:
+            self.box.addWidget(i)
+        
         self.proxy = scene.addWidget(self)
         self.proxy.setZValue(0)
-        self.move(x, y)
+        self.move(*node.location)
         
         #self.group = QtGui.QGraphicsItemGroup(self.proxy, scene)
         #self.group.addToGroup(self.proxy)
         
-        self.noodlets = [Noodlet(*self.output_item_pos(i)) for i in self.items] \
-                      + [Noodlet(*self.input_item_pos(i)) for i in self.items]
+        self.noodlets = [Noodlet(*self.output_item_pos(i)) for i in self.output_items] \
+                      + [Noodlet(*self.input_item_pos(i)) for i in self.input_items]
                       
         for n in self.noodlets:
             scene.addItem(n)
+            n.signal.pressed.connect(scene.noodletPressed)
+            n.signal.released.connect(scene.noodletReleased)
             n.setZValue(10)
         #    self.group.addToGroup(n)
 

@@ -32,8 +32,58 @@ class NodeTemplate:
 #    output_vars = []
     def __init__(self):
         pass
+
+from itertools import chain
+from collections import namedtuple
+
+Noodlet  = namedtuple('Noodlet', ['name', 'dtype', 'connector', 'direction', 'widget'])
+      
+class Node:
+    def inuput_noodlets(self):
+        """
+        Generator for all input items in a node:
+            - input noodlets
+            - input widgets
+            - output widgets
+            - output noodlets
+        In the simplest case each item will be displayed
+        as a label showing the variable name.
         
-class SimpleNode:
+        -> (str name, str type, bool connector, Maybe[widget-hint])
+        
+        The type should be indicative of the kind of widget
+        that would be suitable to manipulate or display the value.
+        
+        Possibilities:
+            - list-selector:    "A" | "B" | "C"
+            - dictionary:       { name: type, ...}
+            - list:             [ type ]
+            - tuple:            ( type, ... )
+            - named-tuple?      ( name: type, ... )
+            - table:            [ named-tuple ]
+            - primitive (key-words): 
+                float, integer, complex, rational
+                char, string
+        
+        For ease of input:    
+            - constrained types: 
+                range(transformer f), where f: [0,1] -> type
+            - prevent mistakes
+                check(type, predicate p), where p: type -> bool
+                for example: Y_lm -> -l >= m >= l
+                
+        Output only:
+            - image, audio, video
+        """
+        pass
+        
+    def output_noodlets(self):
+        """
+        
+        """
+        pass
+        
+class SimpleNode(Node):
     def __init__(self, template):
         self.name = "{name} {number:016X}".format(
             name=template.name, number=id(self))
@@ -42,10 +92,16 @@ class SimpleNode:
         self.template = template
         
     def input_noodlets(self):
-        return self.template.input_vars
+        for v in self.template.input_vars:
+            yield Noodlet(name=v, dtype=int, connector=True, direction='in', widget=False)
         
     def output_noodlets(self):
-        return self.template.output_vars
+        for v in self.template.output_vars:
+            yield Noodlet(name=v, dtype=int, connector=True, direction='out', widget=False)
+        
+    def items(self):
+        yield from iter(self.template.input_vars)
+        yield from iter(self.template.output_vars)
 
 class DataModel:
     """
@@ -105,10 +161,10 @@ class DataModel:
         
         # make sure empty entries exists in the linking dicts
         for s in node.output_noodlets():
-            self._links[(i, s)] = set()
+            self._links[(i, s.name)] = set()
         
         for s in node.input_noodlets():
-            self._inverse_links[(i, s)] = set()
+            self._inverse_links[(i, s.name)] = set()
             
         return i
 
@@ -133,27 +189,27 @@ class DataModel:
     def _delete_node_by_index(self, idx):
         # remove connections to the node
         for s in self._nodes[idx].input_noodlets():
-            for j in self._inverse_links[(idx, s)]:
+            for j in self._inverse_links[(idx, s.name)]:
                 try:
-                    self._links[j].remove((idx, s))
+                    self._links[j].remove((idx, s.name))
                 except ValueError:
                     logger.error(
                         "Found a link in the `_inverse_links` dict" 
                         " that is not represented in the `_links` dict.")
                         
-            del self._inverse_links[(idx,s)]
+            del self._inverse_links[(idx,s.name)]
 
         # remove connections from the node
         for s in self._nodes[idx].output_noodlets():
-            for j in self._links[(idx,s)]:
+            for j in self._links[(idx,s.name)]:
                 try:
-                    self._inverse_links[j].remove((idx,s))
+                    self._inverse_links[j].remove((idx,s.name))
                 except ValueError:
                     logger.error(
                         "Found a link in the `_links` dict" 
                         " that is not represented in the `_inverse_links` dict.")                    
 
-            del self._links[(idx,s)]
+            del self._links[(idx,s.name)]
 
         # remove the node        
         del self._nodes[idx]
