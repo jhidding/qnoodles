@@ -89,6 +89,7 @@ class NoodlesWindow(QtGui.QMainWindow):
         self.show()
 
     def closeEvent(self, event):
+        pass
 #        reply = QtGui.QMessageBox.question(self, 'Message',
 #            "Are you sure to quit?", QtGui.QMessageBox.Yes | 
 #            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
