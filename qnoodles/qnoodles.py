@@ -14,7 +14,7 @@ from PySide import QtGui, QtCore
 from PySide.QtCore import Qt
 
 from .nodebox import NodeBox
-from .sourceview import SourceView
+#from .sourceview import SourceView
         
 class NodeView(QtGui.QGraphicsView):
     def __init__(self, scene):
