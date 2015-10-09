@@ -18,14 +18,14 @@ passing a dictionary. Even then we will want to be able to merge two dicts
 selectively.
 """
 
-import logging
+#import logging
 
-logger = logging.getLogger(__name__)
-_ch = logging.StreamHandler()
-_ch.setLevel(logging.INFO)
-_formatter = logging.Formatter("{asctime} - {levelname}: {message}", style="{")
-_ch.setFormatter(_formatter)
-logger.addHandler(_ch)
+#logger = logging.getLogger(__name__)
+#_ch = logging.StreamHandler()
+#_ch.setLevel(logging.INFO)
+#_formatter = logging.Formatter("{asctime} - {levelname}: {message}", style="{")
+#_ch.setFormatter(_formatter)
+#logger.addHandler(_ch)
 
 class NodeTemplate:
 #    input_vars = []
@@ -100,8 +100,9 @@ class SimpleNode(Node):
             yield Noodlet(name=v, dtype=int, connector=True, direction='out', widget=False)
         
     def items(self):
-        yield from iter(self.template.input_vars)
-        yield from iter(self.template.output_vars)
+        for i in chain(iter(self.template.input_vars),
+                        iter(self.template.output_vars)):
+            yield i
 
 class DataModel:
     """

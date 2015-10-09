@@ -50,11 +50,11 @@ class NoodlesWindow(QtGui.QMainWindow):
 
         self.nodeView.setStyleSheet(style)
         
-        self.sourceView = SourceView()
+        #self.sourceView = SourceView()
         
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(self.nodeView, "Graph view")
-        self.tabWidget.addTab(self.sourceView, "Source view")
+        #self.tabWidget.addTab(self.sourceView, "Source view")
         self.setCentralWidget(self.tabWidget)
         
         self.setGeometry(300, 300, 1024, 600)
@@ -98,7 +98,7 @@ class NoodlesWindow(QtGui.QMainWindow):
 #        else:
 #            event.ignore()
 
-        self.sourceView.backend.stop()
+        #self.sourceView.backend.stop()
                 
 
 def main(model):
